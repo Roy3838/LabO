@@ -4,7 +4,7 @@ using FFTW
 using StatsBase
 using LaTeXStrings
 #Import Image
-img_path = "0fase.jpeg"
+img_path = "pikas/referencia.jpeg"
 img = load(img_path)
 
 
@@ -39,14 +39,19 @@ plot(x[sze+1:xlen-sze-1], y[sze+1:ylen-sze-1],
         st = :surface, camera = (0,90))
 xut = x[sze+1:xlen-sze-1]
 xlenut = length(xut)
-transvcut = nois_mat[250,sze+1:xlen-sze-1]
+transvcut = nois_mat[250,sze+1:xlen-sze-1] 
+
+# Decrease transvcut by 0.7
+transvcut = transvcut.-0.7
+
+transvcut = transvcut #xd 
 
 plot(xut, transvcut, lc = :blue, lw = 4, size = (900, 600),  
 gridalpha = 0.75, framestyle = :origin, label = L"S1", legendfont = font(14),
 xtickfont = font(14), ytickfont = font(14), xlabel = L"x", ylabel = L"I", guidefontsize = 18)
 
-aprox = cos.([2*pi*1.61].*xut./[xlenut].+[pi/2-0.15]).^2
-plot!(xut, aprox, lc = :red,ls = :dash, lw = 4, size = (900, 600),  
-gridalpha = 0.75, framestyle = :origin, label = L"cos^2(\omega x+\alpha)", legendfont = font(14),
-xtickfont = font(14), ytickfont = font(14))
-savefig("C:/Documentos/Studying/Clases/6to Semestre/LabOptica/Practica_MachZehnder/Imagenes/graphS1.png")
+aprox = 0.2*cos.([18*pi*1.61].*xut./[xlenut].-[0.50]).^2
+# plot!(xut, aprox, lc = :red, ls = :dash, lw = 4, size = (900, 600),  
+# gridalpha = 0.75, framestyle = :origin, label = L"cos^2(\omega x+\alpha)", legendfont = font(14),
+# xtickfont = font(14), ytickfont = font(14))
+savefig("Imagenes/graphS1.png")
