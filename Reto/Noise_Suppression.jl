@@ -54,4 +54,4 @@ aprox = 0.2*cos.([18*pi*1.61].*xut./[xlenut].-[0.50]).^2
 # plot!(xut, aprox, lc = :red, ls = :dash, lw = 4, size = (900, 600),  
 # gridalpha = 0.75, framestyle = :origin, label = L"cos^2(\omega x+\alpha)", legendfont = font(14),
 # xtickfont = font(14), ytickfont = font(14))
-savefig("Imagenes/graphS1.png")
+savefig("Plots/graphS1.png")
