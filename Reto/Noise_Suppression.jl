@@ -12,9 +12,7 @@ img = load(img_path)
 gray_image = Gray.(img[800:2000,1500:3000])
 gray_matrix = Float32.(gray_image)
 gray_matrix = gray_matrix.-[minimum(gray_matrix)]
-
-ylen = length(gray_image[:,1])
-xlen = length(gray_image[1,:])
+gray_matrix = gray_matrix./maximum(gray_matrix)
 
 #Plot as a 3d Surface
 ylen = length(gray_image[:,1]) 
@@ -22,7 +20,7 @@ xlen = length(gray_image[1,:])
 x = -xlen/2:(xlen/2-1)
 y = -ylen/2:(ylen/2-1)
 
-sze =4
+"sze =2
 
 noissupp = 1/(sze^2) * ones(2*sze+1,2*sze+1)
 nois_mat = zeros(ylen,xlen)
@@ -31,17 +29,17 @@ for ii in range(sze+1, ylen-sze-1)
         nois_mat[ii, jj] = sum(noissupp.*gray_matrix[ii-sze:ii+sze, jj-sze:jj+sze])
     end
 end
-nois_mat = nois_mat./[maximum(nois_mat)]
+nois_mat = nois_mat./[maximum(nois_mat)]"
 
-plot(x[sze+1:xlen-sze-1], y[sze+1:ylen-sze-1], 
-    nois_mat[sze+1:ylen-sze-1,sze+1:xlen-sze-1], 
+plot(x[sze+1:xlen-sze-1], y[sze+1:ylen-sze-1],
+    gray_matrix[sze+1:ylen-sze-1,sze+1:xlen-sze-1], 
         st = :surface, camera = (0,90))
 xut = x[sze+1:xlen-sze-1]
 xlenut = length(xut)
-transvcut = nois_mat[600,sze+1:xlen-sze-1] 
+transvcut = gray_matrix[600,sze+1:xlen-sze-1] 
 
 # Decrease transvcut by 0.7
-transvcut = transvcut.-0.7
+transvcutn = nois_mat[600,sze+1:xlen-sze-1]
 
 transvcut = transvcut #xd 
 
