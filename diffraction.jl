@@ -14,7 +14,7 @@ ys = xs
 circulo = (X.^2 + Y.^2) .< w0^2
 
 # Graficar apertura
-imshow(circulo, cmap="gray", extent=[-xmax, xmax, -xmax, xmax])2
+imshow(circulo, cmap="gray", extent=[-xmax, xmax, -xmax, xmax])
 
 
 
