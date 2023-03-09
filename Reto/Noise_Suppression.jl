@@ -3,22 +3,25 @@ using Plots
 using FFTW
 using StatsBase
 using LaTeXStrings
-#Import Image
+using DSP 
 
-img_path = "C:/Documentos/Studying/Clases/6to Semestre/LabOptica/LabO/pikas/Fotos_jueves_9/DSC_0006_finas_ref.JPG"
-img = load(img_path)
+#Import Images
+ref_path_0 = load("C:/Documentos/Studying/Clases/6to Semestre/LabOptica/LabO/pikas/Fotos_jueves_9/DSC_0006_finas_ref.JPG")
+img_path_0 = load("C:/Documentos/Studying/Clases/6to Semestre/LabOptica/LabO/pikas/Fotos_jueves_9/DSC_0005_finas_135.JPG")
 
+ref_path_0[470:2450,1500:3000]
 #GrayScale and chop to effective Image
-gray_image = Gray.(img[800:2000,1500:3000])
-gray_matrix = Float32.(gray_image)
-gray_matrix = gray_matrix.-[minimum(gray_matrix)]
-gray_matrix = gray_matrix./maximum(gray_matrix)
+gray_ref_0 = Gray.(ref_path_0[500:2000,1500:3000])
+matrix_ref_0 = Float32.(gray_ref_0)
+matrix_ref_0 = matrix_ref_0.-[minimum(matrix_ref_0)]
+matrix_ref_0 = matrix_ref_0./maximum(matrix_ref_0)
 
-#Plot as a 3d Surface
-ylen = length(gray_image[:,1]) 
-xlen = length(gray_image[1,:])
-x = -xlen/2:(xlen/2-1)
-y = -ylen/2:(ylen/2-1)
+gray_img_0 = Gray.(img_path_0[800:2000,1500:3000])
+matrix_img_0 = Float32.(gray_img_0)
+matrix_img_0 = matrix_img_0.-[minimum(matrix_img_0)]
+matrix_img_0 = matrix_img_0./maximum(matrix_img_0)
+
+
 
 "sze =2
 
@@ -29,7 +32,7 @@ for ii in range(sze+1, ylen-sze-1)
         nois_mat[ii, jj] = sum(noissupp.*gray_matrix[ii-sze:ii+sze, jj-sze:jj+sze])
     end
 end
-nois_mat = nois_mat./[maximum(nois_mat)]"
+nois_mat = nois_mat./[maximum(nois_mat)]
 
 plot(x[sze+1:xlen-sze-1], y[sze+1:ylen-sze-1],
     gray_matrix[sze+1:ylen-sze-1,sze+1:xlen-sze-1], 
