@@ -7,6 +7,7 @@ using LaTeXStrings
 img_path = "0fase.jpeg"
 img = load(img_path)
 
+
 #GrayScale and chop to effective Image
 nsize = 500
 gray_image = Gray.(img[220:720,165:630])
