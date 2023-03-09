@@ -4,17 +4,16 @@ using FFTW
 using StatsBase
 using LaTeXStrings
 #Import Image
-img_path = "pikas/referencia.jpeg"
+
+img_path = "C:/Documentos/Studying/Clases/6to Semestre/LabOptica/LabO/pikas/Fotos_jueves_9/DSC_0006_finas_ref.JPG"
 img = load(img_path)
 
-
 #GrayScale and chop to effective Image
-nsize = 500
-gray_image = Gray.(img[220:720,165:630])
+gray_image = Gray.(img[800:2000,1500:3000])
 gray_matrix = Float32.(gray_image)
 gray_matrix = gray_matrix.-[minimum(gray_matrix)]
 
-ylen = length(gray_image[:,1]) 
+ylen = length(gray_image[:,1])
 xlen = length(gray_image[1,:])
 
 #Plot as a 3d Surface
@@ -23,7 +22,7 @@ xlen = length(gray_image[1,:])
 x = -xlen/2:(xlen/2-1)
 y = -ylen/2:(ylen/2-1)
 
-sze = 5
+sze =4
 
 noissupp = 1/(sze^2) * ones(2*sze+1,2*sze+1)
 nois_mat = zeros(ylen,xlen)
@@ -39,7 +38,7 @@ plot(x[sze+1:xlen-sze-1], y[sze+1:ylen-sze-1],
         st = :surface, camera = (0,90))
 xut = x[sze+1:xlen-sze-1]
 xlenut = length(xut)
-transvcut = nois_mat[250,sze+1:xlen-sze-1] 
+transvcut = nois_mat[600,sze+1:xlen-sze-1] 
 
 # Decrease transvcut by 0.7
 transvcut = transvcut.-0.7
