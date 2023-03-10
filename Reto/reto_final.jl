@@ -2,90 +2,99 @@ using Plots, LaTeXStrings
 using Images
 using DSP
 
-
-
 # --------------PARAMETERS------------#
 
-
-height = 1024
-width = 1280
-IM_PATH = "C:/Users/JayPC/LabO/pikas/Fotos_jueves_9/"
+height = 1800
+width = 1700
+IM_PATH = "C:/Documentos/Studying/Clases/6to Semestre/LabOptica/LabO/pikas/Fotos_Viernes_10_2/"
 
 # Crop parameters
-x1=301
-x2=650
-y1=501
-y2=800
+x1_ref=1501
+x2_ref=3300
+y1_ref=2101
+y2_ref=3800
 
+x1_im = x1_ref - 60
+x2_im = x2_ref 
+y1_im = y1_ref + 75
+y2_im = y2_ref + 150
 
 # -----------IMPORT IMAGES-----------#
-im1load = load(IM_PATH*"DSC_0002_finas _0.JPG")
-im2load = load(IM_PATH*"DSC_0003_finas_45.JPG")
-im3load = load(IM_PATH*"DSC_0004_finas_90.JPG")
-im4load = load(IM_PATH*"DSC_0005_finas_135.JPG")
-
-
-im1 = imresize(im1load,(height,width))
-im2 = imresize(im2load,(height,width))
-im3 = imresize(im3load,(height,width))
-im4 = imresize(im4load,(height,width))
+ref1 = Float64.(Gray.(load(IM_PATH*"DSC_0026.JPG")))
+ref2 = Float64.(Gray.(load(IM_PATH*"DSC_0027.JPG")))
+ref3 = Float64.(Gray.(load(IM_PATH*"DSC_0028.JPG")))
+ref4 = Float64.(Gray.(load(IM_PATH*"DSC_0029.JPG")))
 
 # ---------IMPORT REFERENCES--------#
 
-# simon por mientras cuchareada
-
-function cuchareada(Matrix)
-    cropsito = Matrix[1:50,:]
-    # mirror in vertical axis
-    cropsitomirror = cropsito[end:-1:1,:]
-    # concatenate cropsitos
-    cropsitot = vcat(cropsito, cropsitomirror)
-    cropsitot = vcat(cropsitot, cropsito)
-    cropsitot = vcat(cropsitot, cropsitomirror)
-    cropsitot = vcat(cropsitot, cropsito)
-    cropsitot = vcat(cropsitot, cropsitomirror)
-    cropsitot = vcat(cropsitot, cropsito)
-    return cropsitot
-end
-
-
+im1 = Float64.(Gray.(load(IM_PATH*"DSC_0033.JPG")))
+im2 = Float64.(Gray.(load(IM_PATH*"DSC_0032.JPG")))
+im3 = Float64.(Gray.(load(IM_PATH*"DSC_0031.JPG")))
+im4 = Float64.(Gray.(load(IM_PATH*"DSC_0030.JPG")))
 
 # -----------CROP IMAGES------------#
 include("crop.jl")
-im1 = crop(im1,x1,x2,y1,y2)
-im2 = crop(im2,x1,x2,y1,y2)
-im3 = crop(im3,x1,x2,y1,y2)
-im4 = crop(im4,x1,x2,y1,y2)
+im1 = crop(im1,x1_im,x2_im,y1_im,y2_im)
+im2 = crop(im2,x1_im,x2_im,y1_im,y2_im)
+im3 = crop(im3,x1_im,x2_im,y1_im,y2_im)
+im4 = crop(im4,x1_im,x2_im,y1_im,y2_im)
 
 # -----------CROP REFERENCES------------#
-ref1 = cuchareada(im1)
-ref2 = cuchareada(im2)
-ref3 = cuchareada(im3)
-ref4 = cuchareada(im4)
-ref1 = crop(ref1,x1,x2,y1,y2)
-ref2 = crop(ref2,x1,x2,y1,y2)
-ref3 = crop(ref3,x1,x2,y1,y2)
-ref4 = crop(ref4,x1,x2,y1,y2)
+ref1 = crop(ref1,x1_ref,x2_ref,y1_ref,y2_ref)
+ref2 = crop(ref2,x1_ref,x2_ref,y1_ref,y2_ref)
+ref3 = crop(ref3,x1_ref,x2_ref,y1_ref,y2_ref)
+ref4 = crop(ref4,x1_ref,x2_ref,y1_ref,y2_ref)
 
-# -----------DATA PROCESSING------------#
-im1 = float.(im1)
-im2 = float.(im2)
-im3 = float.(im3)
-im4 = float.(im4)
-ref1 = float.(ref1)
-ref2 = float.(ref2)
-ref3 = float.(ref3)
-ref4 = float.(ref4)
+im1 = imresize(im1, (height, width))
+im2 = imresize(im2, (height, width))
+im3 = imresize(im3, (height, width))
+im4 = imresize(im4, (height, width))
 
-Φi = atan.(im2-im4,im1-im3)
+# ------------NOISE SUPPRESSION----------#
+function noise_supp(img::Array{Float64,2}, sze::Int)::Array{Float64,2}
 
-Φs = atan.(ref2-ref4,ref1-ref3)
+    noissupp = 1/(sze^2) * ones(2*sze+1,2*sze+1)
+    nois_mat = zeros(height, width)
+
+    for ii in range(sze+1, height-sze-1)
+        for jj in range(sze+1, width-sze-1)
+            nois_mat[ii, jj] = sum(noissupp.*img[ii-sze:ii+sze, jj-sze:jj+sze])
+        end
+    end
+
+    return nois_mat
+
+end
+
+sze = 4
+
+im1_n = noise_supp(im1, 4)
+im2_n = noise_supp(im2, 4)
+im3_n = noise_supp(im3, 4)
+im4_n = noise_supp(im4, 4)
+
+ref1_n = noise_supp(ref1, 4)
+ref2_n = noise_supp(ref2, 4)
+ref3_n = noise_supp(ref3, 4)
+ref4_n = noise_supp(ref4, 4)
+
+Φi = atan.(im2_n-im4_n,im1_n-im3_n)
+
+Φs = atan.(ref2_n-ref4_n,ref1_n-ref3_n)
 
 Φu = unwrap(Φs-Φi,dims = 1:2,range = 2pi)
 
-θ = atan(18/50)
+heatmap(Φu)
 
-α = deg2rad(0)  
+θ = atan(18/39.5)
+
+y = 1:height
+x = 1:width
+
+Φu_n = noise_supp(Φu, sze)
+plot(x, y, -Φu_n, st = :surface, camera = (0,60))
+
+
 
 
 
