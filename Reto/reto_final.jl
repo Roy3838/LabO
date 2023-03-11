@@ -54,7 +54,7 @@ im4 = imresize(im4, (height, width))
 
 function noise_supp(img::Array{Float64,2}, sze::Int)::Array{Float64,2}
 
-    noissupp = 1/(sze^2) * ones(2*sze+1,2*sze+1)
+    noissupp = 1/((2*sze+1)^2) * ones(2*sze+1,2*sze+1)
     h = length(img[:,1])
     w = length(img[1,:])
     nois_mat = zeros(h,w)
@@ -69,7 +69,7 @@ function noise_supp(img::Array{Float64,2}, sze::Int)::Array{Float64,2}
 
 end
 
-sze = 1
+sze = 3
 
 im1_n = noise_supp(im1,sze)
 im2_n = noise_supp(im2, sze)
@@ -94,33 +94,12 @@ ref2_n = ref2_n[crp:end-crp, crp:end-crp]
 ref3_n = ref3_n[crp:end-crp, crp:end-crp]
 ref4_n = ref4_n[crp:end-crp, crp:end-crp]
 
-#-----------------NORMALIZE FUNCTIONS TO (0,1)---------------------
-im1_n = im1_n.-minimum(im1_n)
-im2_n = im2_n.-minimum(im2_n)
-im3_n = im3_n.-minimum(im3_n)
-im4_n = im4_n.-minimum(im4_n)
-
-ref1_n = ref1_n.-minimum(ref1_n)
-ref2_n = ref2_n.-minimum(ref2_n)
-ref3_n = ref3_n.-minimum(ref3_n)
-ref4_n = ref4_n.-minimum(ref4_n)
-
-im1_n = im1_n./maximum(im1_n)
-im2_n = im2_n./maximum(im2_n)
-im3_n = im3_n./maximum(im3_n)
-im4_n = im4_n./maximum(im4_n)
-
-ref1_n = ref1_n./maximum(ref1_n)
-ref2_n = ref2_n./maximum(ref2_n)
-ref3_n = ref3_n./maximum(ref3_n)
-ref4_n = ref4_n./maximum(ref4_n)
-
 Φi = atan.(-im2_n+im4_n,im1_n-im3_n)
 
 Φs = atan.(-ref2_n+ref4_n,ref1_n-ref3_n)
 
 Φu = unwrap(Φs-Φi,dims = 1:2,range = 2pi)
-
+heatmap(Φu)
 θ = atan(18/39.5)
 
 Φu_n = noise_supp(Φu, 2)
