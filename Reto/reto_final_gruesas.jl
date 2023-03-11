@@ -14,23 +14,26 @@ x2_ref=3300
 y1_ref=2101
 y2_ref=3800
 
-x1_im = x1_ref - 60
+x1_im = x1_ref 
 x2_im = x2_ref 
-y1_im = y1_ref + 75
-y2_im = y2_ref + 150
+y1_im = y1_ref 
+y2_im = y2_ref+30
 
 # -----------IMPORT IMAGES-----------#
-ref1 = Float64.(Gray.(load(IM_PATH*"DSC_0026.JPG")))
-ref2 = Float64.(Gray.(load(IM_PATH*"DSC_0027.JPG")))
-ref3 = Float64.(Gray.(load(IM_PATH*"DSC_0028.JPG")))
-ref4 = Float64.(Gray.(load(IM_PATH*"DSC_0029.JPG")))
+im2[x1_im:x2_im,y1_im:y2_im]
+ref1[x1_ref:x2_ref,y1_ref:y2_ref]
+
+ref1 = Float64.(Gray.(load(IM_PATH*"DSC_0041.JPG")))
+ref2 = Float64.(Gray.(load(IM_PATH*"DSC_0040.JPG")))
+ref3 = Float64.(Gray.(load(IM_PATH*"DSC_0039.JPG")))
+ref4 = Float64.(Gray.(load(IM_PATH*"DSC_0038.JPG")))
 
 # ---------IMPORT REFERENCES--------#
 
-im1 = Float64.(Gray.(load(IM_PATH*"DSC_0033.JPG")))
-im2 = Float64.(Gray.(load(IM_PATH*"DSC_0032.JPG")))
-im3 = Float64.(Gray.(load(IM_PATH*"DSC_0031.JPG")))
-im4 = Float64.(Gray.(load(IM_PATH*"DSC_0030.JPG")))
+im1 = Float64.(Gray.(load(IM_PATH*"DSC_0034.JPG")))
+im2 = Float64.(Gray.(load(IM_PATH*"DSC_0035.JPG")))
+im3 = Float64.(Gray.(load(IM_PATH*"DSC_0036.JPG")))
+im4 = Float64.(Gray.(load(IM_PATH*"DSC_0037.JPG")))
 
 # -----------CROP IMAGES------------#
 include("crop.jl")
@@ -69,7 +72,7 @@ function noise_supp(img::Array{Float64,2}, sze::Int)::Array{Float64,2}
 
 end
 
-sze = 1
+sze = 3
 
 im1_n = noise_supp(im1,sze)
 im2_n = noise_supp(im2, sze)
@@ -120,10 +123,10 @@ ref4_n = ref4_n./maximum(ref4_n)
 Φs = atan.(-ref2_n+ref4_n,ref1_n-ref3_n)
 
 Φu = unwrap(Φs-Φi,dims = 1:2,range = 2pi)
-
+heatmap(Φu)
 θ = atan(18/39.5)
 
-Φu_n = noise_supp(Φu, 2)
+Φu_n = noise_supp(Φu, 10)
 h = 1:length(Φu_n[:,1])
 w = 1:length(Φu_n[1,:])
 
@@ -143,10 +146,4 @@ function meshgrid(xin,yin)
 end
 x_l, y_l = meshgrid(w, h)
 
-surface(w, h, abs.(Φu_n))
-
-
-
-
-
-
+surface(w, h, Φu_n, camera = (45, 65))
