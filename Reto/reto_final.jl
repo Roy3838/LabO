@@ -51,13 +51,16 @@ im3 = imresize(im3, (height, width))
 im4 = imresize(im4, (height, width))
 
 # ------------NOISE SUPPRESSION----------#
+
 function noise_supp(img::Array{Float64,2}, sze::Int)::Array{Float64,2}
 
     noissupp = 1/(sze^2) * ones(2*sze+1,2*sze+1)
-    nois_mat = zeros(height, width)
+    h = length(img[:,1])
+    w = length(img[1,:])
+    nois_mat = zeros(h,w)
 
-    for ii in range(sze+1, height-sze-1)
-        for jj in range(sze+1, width-sze-1)
+    for ii in range(sze+1, h-sze-1)
+        for jj in range(sze+1, w-sze-1)
             nois_mat[ii, jj] = sum(noissupp.*img[ii-sze:ii+sze, jj-sze:jj+sze])
         end
     end
@@ -66,33 +69,44 @@ function noise_supp(img::Array{Float64,2}, sze::Int)::Array{Float64,2}
 
 end
 
-sze = 4
+sze = 1
 
-im1_n = noise_supp(im1, 4)
-im2_n = noise_supp(im2, 4)
-im3_n = noise_supp(im3, 4)
-im4_n = noise_supp(im4, 4)
+im1_n = noise_supp(im1,sze)
+im2_n = noise_supp(im2, sze)
+im3_n = noise_supp(im3, sze)
+im4_n = noise_supp(im4, sze)
 
-ref1_n = noise_supp(ref1, 4)
-ref2_n = noise_supp(ref2, 4)
-ref3_n = noise_supp(ref3, 4)
-ref4_n = noise_supp(ref4, 4)
+ref1_n = noise_supp(ref1, sze)
+ref2_n = noise_supp(ref2, sze)
+ref3_n = noise_supp(ref3, sze)
+ref4_n = noise_supp(ref4, sze)
 
-Φi = atan.(im2_n-im4_n,im1_n-im3_n)
+#Crop lost information
+crp = 100
 
-Φs = atan.(ref2_n-ref4_n,ref1_n-ref3_n)
+im1_n = im1_n[crp:end-crp, crp:end-crp]
+im2_n = im2_n[crp:end-crp, crp:end-crp]
+im3_n = im3_n[crp:end-crp, crp:end-crp]
+im4_n = im4_n[crp:end-crp, crp:end-crp]
+
+ref1_n = ref1_n[crp:end-crp, crp:end-crp]
+ref2_n = ref2_n[crp:end-crp, crp:end-crp]
+ref3_n = ref3_n[crp:end-crp, crp:end-crp]
+ref4_n = ref4_n[crp:end-crp, crp:end-crp]
+
+Φi = atan.(-im2_n+im4_n,im1_n-im3_n)
+
+Φs = atan.(-ref2_n+ref4_n,ref1_n-ref3_n)
 
 Φu = unwrap(Φs-Φi,dims = 1:2,range = 2pi)
 
-heatmap(Φu)
-
 θ = atan(18/39.5)
 
-y = 1:height
-x = 1:width
-
-Φu_n = noise_supp(Φu, sze)
-plot(x, y, -Φu_n, st = :surface, camera = (0,60))
+Φu_n = noise_supp(Φu, 2)
+h = 1:length(Φu_n[:,1])
+w = 1:length(Φu_n[1,:])
+heatmap(Φu_n)
+h1 = plot(h, w, abs.(Φu_n), st = :surface,c= :dense,camera = (50, 40))
 
 
 

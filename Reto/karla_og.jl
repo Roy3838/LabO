@@ -22,20 +22,20 @@ isample[:,:,3] = (repeat((cos.(x1'./2 .+ pi/2)).^2,tamano[1],Int64.(tamano[2]/p)
 isample[:,:,4] = (repeat((cos.(x1'./2 .+ 3pi/4)).^2,tamano[1],Int64.(tamano[2]/p)));
 
 # Referencia medida
-Isample[:,:,1] = convert.(N0f8,(Gray.(imresize(load("C:/Users/JayPC/LabO/pikas/Karla/Franjas 1.JPG"),tamano[1:2]))));
-Isample[:,:,2] = convert.(N0f8,(Gray.(imresize(load("C:/Users/JayPC/LabO/pikas/Karla/Franjas 2.JPG"),tamano[1:2]))));
-Isample[:,:,3] = convert.(N0f8,(Gray.(imresize(load("C:/Users/JayPC/LabO/pikas/Karla/Franjas 3.JPG"),tamano[1:2]))));
-Isample[:,:,4] = convert.(N0f8,(Gray.(imresize(load("C:/Users/JayPC/LabO/pikas/Karla/Franjas 4.JPG"),tamano[1:2]))));
+Isample[:,:,1] = convert.(N0f8,(Gray.(imresize(load("C:/Documentos/Studying/Clases/6to Semestre/LabOptica/LabO/pikas/Karla/Franjas 1.JPG"),tamano[1:2]))));
+Isample[:,:,2] = convert.(N0f8,(Gray.(imresize(load("C:/Documentos/Studying/Clases/6to Semestre/LabOptica/LabO/pikas/Karla/Franjas 2.JPG"),tamano[1:2]))));
+Isample[:,:,3] = convert.(N0f8,(Gray.(imresize(load("C:/Documentos/Studying/Clases/6to Semestre/LabOptica/LabO/pikas/Karla/Franjas 3.JPG"),tamano[1:2]))));
+Isample[:,:,4] = convert.(N0f8,(Gray.(imresize(load("C:/Documentos/Studying/Clases/6to Semestre/LabOptica/LabO/pikas/Karla/Franjas 4.JPG"),tamano[1:2]))));
 
 # Intensidades medidas del objeto
-Samples[:,:,1] = convert.(N0f8,(Gray.(imresize(load("C:/Users/JayPC/LabO/pikas/Karla/Referencia 1.JPG"),tamano[1:2]))));
-Samples[:,:,2] = convert.(N0f8,(Gray.(imresize(load("C:/Users/JayPC/LabO/pikas/Karla/Referencia 2.JPG"),tamano[1:2]))));
-Samples[:,:,3] = convert.(N0f8,(Gray.(imresize(load("C:/Users/JayPC/LabO/pikas/Karla/Referencia 3.JPG"),tamano[1:2]))));
-Samples[:,:,4] = convert.(N0f8,(Gray.(imresize(load("C:/Users/JayPC/LabO/pikas/Karla/Referencia 4.JPG"),tamano[1:2]))));
+Samples[:,:,1] = convert.(N0f8,(Gray.(imresize(load("C:/Documentos/Studying/Clases/6to Semestre/LabOptica/LabO/pikas/Karla/Referencia 1.JPG"),tamano[1:2]))));
+Samples[:,:,2] = convert.(N0f8,(Gray.(imresize(load("C:/Documentos/Studying/Clases/6to Semestre/LabOptica/LabO/pikas/Karla/Referencia 2.JPG"),tamano[1:2]))));
+Samples[:,:,3] = convert.(N0f8,(Gray.(imresize(load("C:/Documentos/Studying/Clases/6to Semestre/LabOptica/LabO/pikas/Karla/Referencia 3.JPG"),tamano[1:2]))));
+Samples[:,:,4] = convert.(N0f8,(Gray.(imresize(load("C:/Documentos/Studying/Clases/6to Semestre/LabOptica/LabO/pikas/Karla/Referencia 4.JPG"),tamano[1:2]))));
 
 dataS = float.(Samples);
 dataI = float.(Isample);
-
+minimum(dataI[:,:,2])
 # Fase de intensidad de referencia
 Φi = atan.(-(dataI[:,:,2] -dataI[:,:,4]),(dataI[:,:,1]-dataI[:,:,3]));
 
@@ -44,7 +44,7 @@ dataI = float.(Isample);
 
 # Fase de intensidad de objeto medido desenvuekta
 Φu = unwrap(Φs-Φi,dims = 1:2,range = 2pi);
-
+heatmap(Φu)
 θ = deg2rad(12.46);             # Angulo entre la cámara y el proyector
 α = deg2rad(8)               # Angulo entre la altura de los dos
 
