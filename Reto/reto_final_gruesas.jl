@@ -82,8 +82,15 @@ ref4_n = ref4_n[crp:end-crp, crp:end-crp]
 
 Φs = atan.(-ref2_n+ref4_n,ref1_n-ref3_n)
 
-Φu = unwrap(Φs-Φi,dims = 1:2,range = 2pi)
-heatmap(Φu)
+Φu = Φs-Φi
+
+include("unwrap_chochado.jl")
+
+weight = ones(size(Φu))
+
+Φu = phase_unwrap(Φu, weight)
+
+
 θ = atan(18/39.5)
 
 Φu_n = noise_supp(Φu, 10)
@@ -94,4 +101,6 @@ include("meshgrid.jl")
 
 x_l, y_l = meshgrid(w, h)
 
-surface(w, h, Φu_n, camera = (45, 65))
+heatmap(Φu)
+
+#surface(w, h, Φu_n, camera = (45, 65))
