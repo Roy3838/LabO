@@ -6,7 +6,10 @@ using DSP
 
 height = 1800
 width = 1700
-IM_PATH = "C:/Users/JayPC/LabO/pikas/Fotos_Viernes_10_2/"
+gil_path = "C:/Documentos/Studying/Clases/6to Semestre/LabOptica/LabO/pikas/Fotos_Viernes_10_2/"
+roy_path = "C:/Users/JayPC/LabO/pikas/Fotos_Viernes_10_2/"
+
+IM_PATH = gil_path 
 
 # Crop parameters
 x1_ref=1501
