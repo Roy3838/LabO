@@ -6,7 +6,7 @@ using DSP
 
 height = 1800
 width = 1700
-IM_PATH = "C:/Users/JayPC/LabO/pikas/Fotos_Viernes_10_2/"
+IM_PATH = "/Users/roymedina/LabO/pikas/Fotos_Viernes_10_2/"
 
 # Crop parameters
 x1_ref=1501
@@ -84,12 +84,13 @@ ref4_n = ref4_n[crp:end-crp, crp:end-crp]
 
 Φu = Φs-Φi
 
+Φu = Φu[1:1501, 1:1501]
+
 include("unwrap_chochado.jl")
 
-weight = ones(size(Φu))
+Φu = phase_unwrap(Φu)
 
-Φu = phase_unwrap(Φu, weight)
-
+print(Φu)
 
 θ = atan(18/39.5)
 
@@ -101,6 +102,11 @@ include("meshgrid.jl")
 
 x_l, y_l = meshgrid(w, h)
 
-heatmap(Φu)
+#heatmap(Φu)
 
-#surface(w, h, Φu_n, camera = (45, 65))
+plotlyjs()
+surface(w, h, Φu_n, camera = (45, 65))
+
+
+
+
