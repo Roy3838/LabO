@@ -1,5 +1,5 @@
 # Codigo de unwrapping creado por Roy Medina y Gilberto
-using FFTW
+using FFTW: dct, idct
 
 function phase_unwrap(psi::Array{Float64})
     # get the wrapped differences of the wrapped values

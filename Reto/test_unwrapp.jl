@@ -108,14 +108,14 @@ include("meshgrid.jl")
 x = 1:100
 y = 1:100
 x_l, y_l = meshgrid(x, y)
-z = x_l/5 + y_l/5
+
+
+# Make a cosine wave in z
+z = 2*cos.(x_l/10) .+ 2*cos.(y_l/10)
 
 
 # wrap z values to [-pi, pi]
 z = mod.(z, 2pi) .- pi
-
-
-
 
 
 psi = z
@@ -125,20 +125,17 @@ dy = [zeros(1,size(psi,2)); wrapToPi(diff(psi, dims=1)); zeros(1,size(psi,2))]
 rho = diff(dx,dims=2) + diff(dy,dims=1)
 # solve the poisson equation using dct in 2 dimensions
 dctRho = mapslices(dct, rho, dims=(1,2))
-dctRho = mapslices(dct, dctRho, dims=(2,1))
 
 N, M = size(rho)
 I, J = meshgrid(0:M-1, 0:N-1)
 dctPhi = dctRho ./ 2 ./ (cos(pi*I/M) + cos(pi*J/N) .- 2)
 dctPhi[1,1] = 0 # handling the inf/nan value
-
 phi = mapslices(idct, dctPhi, dims=(1,2))
-phi = mapslices(idct, phi, dims=(2,1))
-
-
 
 plotlyjs()
 surface(phi, camera=(30, 60))
+
+
 
 
 

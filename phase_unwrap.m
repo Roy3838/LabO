@@ -12,36 +12,27 @@
 x = 1:100;
 y = 1:100;
 [x_l, y_l] = meshgrid(x, y);
-z = x_l/5 + y_l/5;
+z = 2*cos(x_l/10) + 2*cos(y_l/10);
 
 z = mod(z, 2*pi) - pi;
 
-z = phase_unwraps(z);
+psi = z;
 
-surf(x_l, y_l, z)
+% get the wrapped differences of the wrapped values
+dx = [zeros([size(psi,1),1]), wrapToPi(diff(psi, 1, 2)), zeros([size(psi,1),1])];
+dy = [zeros([1,size(psi,2)]); wrapToPi(diff(psi, 1, 1)); zeros([1,size(psi,2)])];
+rho = diff(dx, 1, 2) + diff(dy, 1, 1);     
+
+% solve the poisson equation using dct
+dctRho = dct2(rho);
+[N, M] = size(rho);
+[I, J] = meshgrid([0:M-1], [0:N-1]);
+dctPhi = dctRho ./ 2 ./ (cos(pi*I/M) + cos(pi*J/N) - 2);
+dctPhi(1,1) = 0; % handling the inf/nan value
+
+% now invert to get the result
+phi = idct2(dctPhi); % este we esta dificil
+
+surf(x_l, y_l, phi)
 
 
-function phi = phase_unwraps(psi)
-    if (nargin < 2) % unweighted phase unwrap
-        % get the wrapped differences of the wrapped values
-        dx = [zeros([size(psi,1),1]), wrapToPi(diff(psi, 1, 2)), zeros([size(psi,1),1])];
-        dy = [zeros([1,size(psi,2)]); wrapToPi(diff(psi, 1, 1)); zeros([1,size(psi,2)])];
-        rho = diff(dx, 1, 2) + diff(dy, 1, 1);     
-        phi = solvePoisson(rho);
-
-    end
-end
-
-function phi = solvePoisson(rho)
-    % solve the poisson equation using dct
-    dctRho = dct2(rho);
-    disp(dctRho)
-    [N, M] = size(rho);
-    [I, J] = meshgrid([0:M-1], [0:N-1]);
-    dctPhi = dctRho ./ 2 ./ (cos(pi*I/M) + cos(pi*J/N) - 2);
-    dctPhi(1,1) = 0; % handling the inf/nan value
-    
-    % now invert to get the result
-    phi = idct2(dctPhi); % este we esta dificil
-    
-end
