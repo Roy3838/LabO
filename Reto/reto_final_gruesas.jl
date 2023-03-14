@@ -7,7 +7,7 @@ using DSP
 height = 1800
 width = 1700
 gil_path = "C:/Documentos/Studying/Clases/6to Semestre/LabOptica/LabO/pikas/Fotos_Viernes_10_2/"
-roy_path = "C:/Users/JayPC/LabO/pikas/Fotos_Viernes_10_2/"
+roy_path = "/Users/roymedina/LabO/pikas/Fotos_Viernes_10_2/"
 
 IM_PATH = gil_path 
 
@@ -85,8 +85,16 @@ ref4_n = ref4_n[crp:end-crp, crp:end-crp]
 
 Φs = atan.(-ref2_n+ref4_n,ref1_n-ref3_n)
 
-Φu = unwrap(Φs-Φi,dims = 1:2,range = 2pi)
-heatmap(Φu)
+Φu = Φs-Φi
+
+Φu = Φu[1:1501, 1:1501]
+
+include("unwrap_chochado.jl")
+
+Φu = phase_unwrap(Φu)
+
+print(Φu)
+
 θ = atan(18/39.5)
 
 Φu_n = noise_supp(Φu, 10)
@@ -97,4 +105,11 @@ include("meshgrid.jl")
 
 x_l, y_l = meshgrid(w, h)
 
+#heatmap(Φu)
+
+plotlyjs()
 surface(w, h, Φu_n, camera = (45, 65))
+
+
+
+

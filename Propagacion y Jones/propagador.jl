@@ -9,11 +9,8 @@ using FFTW
 function propagar(U_0, z, k_x, k_y)
 
     F_U = fft(U_0) # Transformada de Fourier de U_0
-
-    F_Um = 2.718.^(im.*k_x.*k_y*z).*F_U # Propagacion de Fourier
-
+    F_Um = exp.(im.*k_x.*k_y.*z).*F_U # Propagacion de Fourier
     U = ifft(F_Um) # Transformada inversa de Fourier
-
     return U
 end
 
@@ -62,15 +59,15 @@ for i in 1:N
 end
 
 # Visualizar campo inicial
-heatmap(abs.(U_0).^2)
-
-
-
-
-#U = propagar(U_0, z, k_x, k_y)
-
-
 #heatmap(abs.(U_0).^2)
+
+
+
+
+U = propagar(U_0, z, k_x, k_y)
+
+
+heatmap(abs.(U).^2)
 
 # Propagar
 
