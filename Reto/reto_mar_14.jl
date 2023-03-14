@@ -1,36 +1,47 @@
-using Plots, LaTeXStrings
+using Plots
+using LaTeXStrings
 using Images
 using DSP
+using ImageFiltering
 
 # --------------PARAMETERS------------#
 
-height = 1800
-width = 1700
-IM_PATH = "C:/Users/JayPC/LabO/pikas/Fotos_Mar_14/"
+height = 2801
+width = 2551
+gil_path = "C:/Documentos/Studying/Clases/6to Semestre/LabOptica/LabO/pikas/Fotos_Martes_14/"
+roy_path = "/Users/roymedina/LabO/pikas/Fotos_Viernes_10_2/"
+IM_PATH = gil_path
 
 # Crop parameters
-x1_ref=1501
-x2_ref=3300
-y1_ref=2101
-y2_ref=3800
+x1_ref=300
+x2_ref=3100
+y1_ref=1150
+y2_ref=3700
 
-x1_im = x1_ref - 60
+x1_im = x1_ref 
 x2_im = x2_ref 
-y1_im = y1_ref + 75
-y2_im = y2_ref + 150
+y1_im = y1_ref 
+y2_im = y2_ref 
 
+#--------------- PIXEL TO MM.---------------#
+
+mm = 36
+a = 83
+a = a/mm
 # -----------IMPORT IMAGES-----------#
-ref1 = Float64.(Gray.(load(IM_PATH*"DSC_0026.JPG")))
-ref2 = Float64.(Gray.(load(IM_PATH*"DSC_0027.JPG")))
-ref3 = Float64.(Gray.(load(IM_PATH*"DSC_0028.JPG")))
-ref4 = Float64.(Gray.(load(IM_PATH*"DSC_0029.JPG")))
-
+load(IM_PATH*"DSC_0355.JPG")
+ref1 = Float64.(Gray.(load(IM_PATH*"DSC_0355.JPG")))
+#ref1[300:700,2450:2550]
+#plot(Float64.(ref1[1632,2463:2545]))
+ref2 = Float64.(Gray.(load(IM_PATH*"DSC_0356.JPG")))
+ref3 = Float64.(Gray.(load(IM_PATH*"DSC_0357.JPG")))
+ref4 = Float64.(Gray.(load(IM_PATH*"DSC_0358.JPG")))
 # ---------IMPORT REFERENCES--------#
 
-im1 = Float64.(Gray.(load(IM_PATH*"DSC_0033.JPG")))
-im2 = Float64.(Gray.(load(IM_PATH*"DSC_0032.JPG")))
-im3 = Float64.(Gray.(load(IM_PATH*"DSC_0031.JPG")))
-im4 = Float64.(Gray.(load(IM_PATH*"DSC_0030.JPG")))
+im1 = Float64.(Gray.(load(IM_PATH*"DSC_0362.JPG")))
+im2 = Float64.(Gray.(load(IM_PATH*"DSC_0361.JPG")))
+im3 = Float64.(Gray.(load(IM_PATH*"DSC_0360.JPG")))
+im4 = Float64.(Gray.(load(IM_PATH*"DSC_0359.JPG")))
 
 # -----------CROP IMAGES------------#
 include("crop.jl")
@@ -50,7 +61,7 @@ im2 = imresize(im2, (height, width))
 im3 = imresize(im3, (height, width))
 im4 = imresize(im4, (height, width))
 
-sze = 3
+sze = 5
 
 include("noise_supp.jl")
 
@@ -65,7 +76,7 @@ ref3_n = noise_supp(ref3, sze)
 ref4_n = noise_supp(ref4, sze)
 
 #Crop lost information
-crp = 100
+crp = 450
 
 im1_n = im1_n[crp:end-crp, crp:end-crp]
 im2_n = im2_n[crp:end-crp, crp:end-crp]
@@ -83,15 +94,20 @@ ref4_n = ref4_n[crp:end-crp, crp:end-crp]
 
 Φu = unwrap(Φs-Φi,dims = 1:2,range = 2pi)
 heatmap(Φu)
-θ = atan(18/39.5)
 
-Φu_n = noise_supp(Φu, 2)
-h = 1:length(Φu_n[:,1])
-w = 1:length(Φu_n[1,:])
+θ = atan(11.5/31.8)
+Φu_n =  imfilter(Φu, Kernel.gaussian(7))
+heatmap(Φu_n)
 
+h = ((1:length(Φu_n[:,1])).-1)./mm
+w = ((1:length(Φu_n[1,:])).-1)./mm
+
+length(h)
+length(w)
 include("meshgrid.jl")
 
-x_l, y_l = meshgrid(w, h)
+z = Φu_n.*(a/(2*pi*tan(θ)))
+surface(w, h, z, zlims = (0,45),camera = (45,60), aspect_ratio = :equal)
+surface(w, h, z, xlims = (10, 40), ylims = (5,35),camera = (0,90), aspect_ratio = :equal)
 
-surface(w, h, abs.(Φu_n))
 
