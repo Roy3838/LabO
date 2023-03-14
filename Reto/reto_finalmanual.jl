@@ -86,6 +86,24 @@ include("unwrap_chochado.jl")
 
 #Φu = unwrap(Φs-Φi,dims = 1:2,range = 2pi)
 Φu = Φs-Φi
+Φu = Φu[1:1500, 1:1500]
+
+psi = Φu
+
+dx = [zeros(size(psi,1),1) wrapToPi(diff(psi, dims=2)) zeros(size(psi,1),1)]
+dy = [zeros(1,size(psi,2)); wrapToPi(diff(psi, dims=1)); zeros(1,size(psi,2))]
+rho = diff(dx,dims=2) + diff(dy,dims=1)
+# solve the poisson equation using dct in 2 dimensions
+dctRho = mapslices(dct, rho, dims=(1,2))
+#dctRho = mapslices(dct, dctRho, dims=(2,1))
+# print(dctRho)
+N, M = size(rho)
+I = ones(N,1).*ones(1,M)
+J = ones(M,1).*ones(1,N)
+
+dctPhi = dctRho ./ 2 ./ (cos(pi*I/M) + cos(pi*J/N) .- 2)
+dctPhi[1,1] = 0 # handling the inf/nan value
+phi = mapslices(idct, dctPhi, dims=(1,2))
 
 Φu = unwrap(Φu, dims = 1:2,range = 2pi)
 
