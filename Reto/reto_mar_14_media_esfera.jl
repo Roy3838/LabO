@@ -98,8 +98,7 @@ heatmap(Φi)
 Φs = atan.(-ref2_n+ref4_n,ref1_n-ref3_n)
 
 Φu = unwrap(Φs-Φi,dims = 1:2,range = 2pi)
-heatmap(Φu)
-
+heatmap(w, h, Φu)
 θ = atan(10/40.8)
 
 h = ((1:length(Φu[:,1])).-1)./mm
