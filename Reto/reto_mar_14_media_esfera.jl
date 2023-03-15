@@ -30,18 +30,18 @@ a = 83
 a = a/mm
 # -----------IMPORT IMAGES-----------#
 
-ref1 = Float64.(Gray.(load(IM_PATH*"DSC_0318.JPG")))
+ref1 = Float64.(Gray.(load(IM_PATH*"DSC_0303.JPG")))
 #ref1[300:700,2450:2550]
 #plot(Float64.(ref1[1632,2463:2545]))
-ref2 = Float64.(Gray.(load(IM_PATH*"DSC_0317.JPG")))
-ref3 = Float64.(Gray.(load(IM_PATH*"DSC_0316.JPG")))
-ref4 = Float64.(Gray.(load(IM_PATH*"DSC_0315.JPG")))
+ref2 = Float64.(Gray.(load(IM_PATH*"DSC_0304.JPG")))
+ref3 = Float64.(Gray.(load(IM_PATH*"DSC_0305.JPG")))
+ref4 = Float64.(Gray.(load(IM_PATH*"DSC_0306.JPG")))
 # ---------IMPORT REFERENCES--------#
 
-im1 = Float64.(Gray.(load(IM_PATH*"DSC_0311.JPG")))
-im2 = Float64.(Gray.(load(IM_PATH*"DSC_0312.JPG")))
-im3 = Float64.(Gray.(load(IM_PATH*"DSC_0313.JPG")))
-im4 = Float64.(Gray.(load(IM_PATH*"DSC_0314.JPG")))
+im1 = Float64.(Gray.(load(IM_PATH*"DSC_0310.JPG")))
+im2 = Float64.(Gray.(load(IM_PATH*"DSC_0309.JPG")))
+im3 = Float64.(Gray.(load(IM_PATH*"DSC_0308.JPG")))
+im4 = Float64.(Gray.(load(IM_PATH*"DSC_0307.JPG")))
 
 
 # -----------CROP IMAGES------------#
@@ -62,7 +62,7 @@ im2 = imresize(im2, (height, width))
 im3 = imresize(im3, (height, width))
 im4 = imresize(im4, (height, width))
 
-sze = 8
+sze = 0
 
 include("noise_supp.jl")
 
@@ -76,23 +76,9 @@ ref2_n = noise_supp(ref2, sze)
 ref3_n = noise_supp(ref3, sze)
 ref4_n = noise_supp(ref4, sze)
 
-kern1 = 1/(2*sze+1) * ones(1,2*sze+1)
-kernf = kernelfactors((kern1, kern1))
-im1_n = imfilter(im1, kernf)
-
-im1_n_g = imfilter(im1, Kernel.gaussian(sze));
-im2_n_g = imfilter(im2, Kernel.gaussian(sze));
-im3_n_g = imfilter(im3, Kernel.gaussian(sze));
-im4_n_g = imfilter(im4, Kernel.gaussian(sze));
-
-ref1_n_g = imfilter(ref1, Kernel.gaussian(sze));
-ref2_n_g = imfilter(ref2, Kernel.gaussian(sze));
-ref3_n_g = imfilter(ref3, Kernel.gaussian(sze));
-ref4_n_g = imfilter(ref4, Kernel.gaussian(sze));
 
 #Crop lost information
 crp = 450
-heatmap(im2)
 
 im1_n = im1_n[crp:end-crp, crp:end-crp]
 im2_n = im2_n[crp:end-crp, crp:end-crp]
@@ -104,35 +90,25 @@ ref2_n = ref2_n[crp:end-crp, crp:end-crp]
 ref3_n = ref3_n[crp:end-crp, crp:end-crp]
 ref4_n = ref4_n[crp:end-crp, crp:end-crp]
 
-im1_n = im1_n_g[crp:end-crp, crp:end-crp]
-im2_n = im2_n_g[crp:end-crp, crp:end-crp]
-im3_n = im3_n_g[crp:end-crp, crp:end-crp]
-im4_n = im4_n_g[crp:end-crp, crp:end-crp]
+Φi = atan.(-im2_n+im4_n,im1_n-im3_n)
 
-ref1_n = ref1_n_g[crp:end-crp, crp:end-crp]
-ref2_n = ref2_n_g[crp:end-crp, crp:end-crp]
-ref3_n = ref3_n_g[crp:end-crp, crp:end-crp]
-ref4_n = ref4_n_g[crp:end-crp, crp:end-crp]
+heatmap(Φs)
+heatmap(Φi)
 
-Φi = atan.(-im2+im4,im1-im3)
-
-Φs = atan.(-ref2+ref4,ref1-ref3)
+Φs = atan.(-ref2_n+ref4_n,ref1_n-ref3_n)
 
 Φu = unwrap(Φs-Φi,dims = 1:2,range = 2pi)
 heatmap(Φu)
 
-θ = atan(11.5/31.8)
-Φu_n =  imfilter(Φu, Kernel.gaussian(10))
-heatmap(w, h, Φu_n)
+θ = atan(10/40.8)
 
-h = ((1:length(Φu_n[:,1])).-1)./mm
-w = ((1:length(Φu_n[1,:])).-1)./mm
+h = ((1:length(Φu[:,1])).-1)./mm
+w = ((1:length(Φu[1,:])).-1)./mm
 
 length(h)
 length(w)
 include("meshgrid.jl")
 a/(2*pi*tan(θ))
-z = Φu_n.*(a/(2*pi*tan(θ)))
-heatmap(w, h, abs.(z),xlims = (10, 40), ylims = (5,35), aspect_ratio = :equal)
-surface(w, h, z, zlims = (0,30), camera = (45,60), aspect_ratio = :equal)
-surface(w, h, z, xlims = (10, 40), ylims = (5,35),camera = (0,90), aspect_ratio = :equal)
+z = Φu.*(a/(2*pi*tan(θ)))
+surface(w, h, z, zlims = (0,30), camera = (0,0), aspect_ratio = :equal)
+surface(w, h, z, xlims = (5, 43), ylims = (5,43),camera = (0,90), aspect_ratio = :equal) 
