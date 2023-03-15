@@ -4,6 +4,7 @@ using Images
 using DSP
 using ImageFiltering
 
+plotly()
 # --------------PARAMETERS------------#
 
 height = 2801
@@ -30,18 +31,18 @@ a = 83
 a = a/mm
 # -----------IMPORT IMAGES-----------#
 load(IM_PATH*"DSC_0355.JPG")
-ref1 = Float64.(Gray.(load(IM_PATH*"DSC_0355.JPG")))
+ref1 = Float64.(Gray.(load(IM_PATH*"DSC_0370.JPG")))
 #ref1[300:700,2450:2550]
 #plot(Float64.(ref1[1632,2463:2545]))
-ref2 = Float64.(Gray.(load(IM_PATH*"DSC_0356.JPG")))
-ref3 = Float64.(Gray.(load(IM_PATH*"DSC_0357.JPG")))
-ref4 = Float64.(Gray.(load(IM_PATH*"DSC_0358.JPG")))
+ref2 = Float64.(Gray.(load(IM_PATH*"DSC_0369.JPG")))
+ref3 = Float64.(Gray.(load(IM_PATH*"DSC_0368.JPG")))
+ref4 = Float64.(Gray.(load(IM_PATH*"DSC_0367.JPG")))
 # ---------IMPORT REFERENCES--------#
 
-im1 = Float64.(Gray.(load(IM_PATH*"DSC_0362.JPG")))
-im2 = Float64.(Gray.(load(IM_PATH*"DSC_0361.JPG")))
-im3 = Float64.(Gray.(load(IM_PATH*"DSC_0360.JPG")))
-im4 = Float64.(Gray.(load(IM_PATH*"DSC_0359.JPG")))
+im1 = Float64.(Gray.(load(IM_PATH*"DSC_0363.JPG")))
+im2 = Float64.(Gray.(load(IM_PATH*"DSC_0364.JPG")))
+im3 = Float64.(Gray.(load(IM_PATH*"DSC_0365.JPG")))
+im4 = Float64.(Gray.(load(IM_PATH*"DSC_0366.JPG")))
 
 # -----------CROP IMAGES------------#
 include("crop.jl")
@@ -61,7 +62,7 @@ im2 = imresize(im2, (height, width))
 im3 = imresize(im3, (height, width))
 im4 = imresize(im4, (height, width))
 
-sze = 5
+sze = 8
 
 include("noise_supp.jl")
 
@@ -96,7 +97,8 @@ ref4_n = ref4_n[crp:end-crp, crp:end-crp]
 heatmap(Φu)
 
 θ = atan(11.5/31.8)
-Φu_n =  imfilter(Φu, Kernel.gaussian(7))
+Φu_n =  imfilter(Φu, Kernel.gaussian(5))
+Φu_n = Φu_n.*(maximum(Φu)/maximum(Φu_n))
 heatmap(Φu_n)
 
 h = ((1:length(Φu_n[:,1])).-1)./mm
@@ -108,7 +110,10 @@ include("meshgrid.jl")
 
 z = Φu_n.*(a/(2*pi*tan(θ)))
 heatmap(w, h, abs.(z),xlims = (10, 40), ylims = (5,35), aspect_ratio = :equal)
-surface(w, h, z, zlims = (0,45),camera = (45,60), aspect_ratio = :equal)
+surface(w, h, z, xlims = (10, 40), ylims = (5,35),camera = (45,45), aspect_ratio = 1)
 surface(w, h, z, xlims = (10, 40), ylims = (5,35),camera = (0,90), aspect_ratio = :equal)
-
+plot3d!([0, 45],[0,0],[0,0], lc = :black, legend = false)
+plot3d!([0, 0],[0,45],[0,0], lc = :black, legend = false)
+plot3d!([0, 45],[0,0],[0,45], lc = :black, legend = false)
+maximum(z)
 
