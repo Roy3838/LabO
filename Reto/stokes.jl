@@ -6,8 +6,8 @@ using ImageFiltering
 
 # --------------PARAMETERS------------#
 
-height = 2048
-width = 2048
+height = 480
+width = 640
 h = 1:height
 w = 1:width
 
