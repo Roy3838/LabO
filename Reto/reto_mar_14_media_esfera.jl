@@ -4,6 +4,7 @@ using Images
 using DSP
 using ImageFiltering
 
+plotly()
 # --------------PARAMETERS------------#
 
 height = 2801
@@ -62,9 +63,8 @@ im2 = imresize(im2, (height, width))
 im3 = imresize(im3, (height, width))
 im4 = imresize(im4, (height, width))
 
-sze = 0
+sze = 5
 
-heatmap(ref1)
 include("noise_supp.jl")
 
 im1_n = noise_supp(im1, sze)
@@ -93,15 +93,13 @@ ref4_n = ref4_n[crp:end-crp, crp:end-crp]
 
 Φi = atan.(-im2_n+im4_n,im1_n-im3_n)
 
-heatmap(Φs)
-heatmap(Φi)
-
 Φs = atan.(-ref2_n+ref4_n,ref1_n-ref3_n)
 
 Φu = unwrap(Φs-Φi,dims = 1:2,range = 2pi)
-heatmap(w, h, Φu)
+heatmap(w, h, Φu, xlims = (0,45), ylims = (0,52),aspect_ratio = :equal)
 θ = atan(9/40.8)
 Φu_n = imfilter(Φu, Kernel.gaussian(6))
+Φu_n = Φu_n.*(maximum(Φu)/maximum(Φu_n))
 #Φu_n = noise_supp(Φu, 5)
 
 h = ((1:length(Φu[:,1])).-1)./mm
@@ -112,5 +110,12 @@ length(w)
 include("meshgrid.jl")
 a/(2*pi*tan(θ))
 z = Φu_n.*(a/(2*pi*tan(θ)))
-surface(w, h, z, zlims = (0,30), camera = (0,90), aspect_ratio = :equal)
-surface(w, h, z, xlims = (5, 43), ylims = (5,43),camera = (0,90), aspect_ratio = :equal) 
+heatmap(w, h, z, xlims = (0,45), ylims = (0,52),aspect_ratio = :equal)
+surface(w, h, z, xlims = (0,45), ylims = (0,52), camera = (45,45), aspect_ratio = 1)
+plot3d!([0, 45],[0,0],[0,0], lc = :black, legend = false)
+plot3d!([0, 0],[0,53],[0,0], lc = :black, legend = false)
+plot3d!([0, 0],[0,0],[0,45], lc = :black, legend = false, zlabel = "z (mm)")
+xlabel!("x (mm)")
+ylabel!("y (mm)")
+
+save(u, "timon_isotropica.png")

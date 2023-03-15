@@ -30,19 +30,18 @@ mm = 36
 a = 83
 a = a/mm
 # -----------IMPORT IMAGES-----------#
-load(IM_PATH*"DSC_0355.JPG")
-ref1 = Float64.(Gray.(load(IM_PATH*"DSC_0370.JPG")))
+ref1 = Float64.(Gray.(load(IM_PATH*"DSC_0378.JPG")))
 #ref1[300:700,2450:2550]
 #plot(Float64.(ref1[1632,2463:2545]))
-ref2 = Float64.(Gray.(load(IM_PATH*"DSC_0369.JPG")))
-ref3 = Float64.(Gray.(load(IM_PATH*"DSC_0368.JPG")))
-ref4 = Float64.(Gray.(load(IM_PATH*"DSC_0367.JPG")))
+ref2 = Float64.(Gray.(load(IM_PATH*"DSC_0377.JPG")))
+ref3 = Float64.(Gray.(load(IM_PATH*"DSC_0376.JPG")))
+ref4 = Float64.(Gray.(load(IM_PATH*"DSC_0375.JPG")))
 # ---------IMPORT REFERENCES--------#
 
-im1 = Float64.(Gray.(load(IM_PATH*"DSC_0363.JPG")))
-im2 = Float64.(Gray.(load(IM_PATH*"DSC_0364.JPG")))
-im3 = Float64.(Gray.(load(IM_PATH*"DSC_0365.JPG")))
-im4 = Float64.(Gray.(load(IM_PATH*"DSC_0366.JPG")))
+im1 = Float64.(Gray.(load(IM_PATH*"DSC_0371.JPG")))
+im2 = Float64.(Gray.(load(IM_PATH*"DSC_0372.JPG")))
+im3 = Float64.(Gray.(load(IM_PATH*"DSC_0373.JPG")))
+im4 = Float64.(Gray.(load(IM_PATH*"DSC_0374.JPG")))
 
 # -----------CROP IMAGES------------#
 include("crop.jl")
@@ -97,10 +96,9 @@ ref4_n = ref4_n[crp:end-crp, crp:end-crp]
 heatmap(Φu)
 
 θ = atan(11.5/31.8)
-Φu_n =  imfilter(Φu, Kernel.gaussian(5))
+Φu_n =  imfilter(Φu, Kernel.gaussian(8))
 Φu_n = Φu_n.*(maximum(Φu)/maximum(Φu_n))
-heatmap(Φu_n)
-
+heatmap(w, h, Φu_n, xlims = (10, 35), ylims = (15,43))
 h = ((1:length(Φu_n[:,1])).-1)./mm
 w = ((1:length(Φu_n[1,:])).-1)./mm
 
@@ -109,11 +107,13 @@ length(w)
 include("meshgrid.jl")
 
 z = Φu_n.*(a/(2*pi*tan(θ)))
-heatmap(w, h, abs.(z),xlims = (10, 40), ylims = (5,35), aspect_ratio = :equal)
-surface(w, h, z, xlims = (10, 40), ylims = (5,35),camera = (45,45), aspect_ratio = 1)
-surface(w, h, z, xlims = (10, 40), ylims = (5,35),camera = (0,90), aspect_ratio = :equal)
-plot3d!([0, 45],[0,0],[0,0], lc = :black, legend = false)
-plot3d!([0, 0],[0,45],[0,0], lc = :black, legend = false)
-plot3d!([0, 45],[0,0],[0,45], lc = :black, legend = false)
-maximum(z)
+
+u = surface(w, h, z,  xlims = (10, 35), ylims = (15,43),camera = (45,45), aspect_ratio = 1)
+plot3d!([10, 35],[0,0],[0,0], lc = :black, legend = false)
+plot3d!([0, 0],[15,43],[0,0], lc = :black, legend = false)
+plot3d!([0, 0],[0,0],[0,27], lc = :black, legend = false, zlabel = "z (mm)")
+xlabel!("x (mm)")
+ylabel!("y (mm)")
+
+save(u, "timon_isotropica.png")
 
