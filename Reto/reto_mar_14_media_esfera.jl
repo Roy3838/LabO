@@ -64,6 +64,7 @@ im4 = imresize(im4, (height, width))
 
 sze = 0
 
+heatmap(ref1)
 include("noise_supp.jl")
 
 im1_n = noise_supp(im1, sze)
@@ -99,7 +100,9 @@ heatmap(Φi)
 
 Φu = unwrap(Φs-Φi,dims = 1:2,range = 2pi)
 heatmap(w, h, Φu)
-θ = atan(10/40.8)
+θ = atan(9/40.8)
+Φu_n = imfilter(Φu, Kernel.gaussian(6))
+#Φu_n = noise_supp(Φu, 5)
 
 h = ((1:length(Φu[:,1])).-1)./mm
 w = ((1:length(Φu[1,:])).-1)./mm
@@ -108,6 +111,6 @@ length(h)
 length(w)
 include("meshgrid.jl")
 a/(2*pi*tan(θ))
-z = Φu.*(a/(2*pi*tan(θ)))
-surface(w, h, z, zlims = (0,30), camera = (0,0), aspect_ratio = :equal)
+z = Φu_n.*(a/(2*pi*tan(θ)))
+surface(w, h, z, zlims = (0,30), camera = (0,90), aspect_ratio = :equal)
 surface(w, h, z, xlims = (5, 43), ylims = (5,43),camera = (0,90), aspect_ratio = :equal) 
