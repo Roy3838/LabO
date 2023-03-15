@@ -3,6 +3,7 @@ using LaTeXStrings
 using Images
 using DSP
 using ImageFiltering
+using Statistics
 
 # --------------PARAMETERS------------#
 
@@ -11,19 +12,20 @@ width = 640
 h = 1:height
 w = 1:width
 
-gil_path = "C:/Documentos/Studying/Clases/6to Semestre/LabOptica/LabO/pikas/Stokes/"
+gil_path = "C:/Documentos/Studying/Clases/6to Semestre/LabOptica/LabO/pikas/Fotos_Miercoles_Stokes/"
 roy_path = "/Users/roymedina/LabO/pikas/Stokes/"
 IM_PATH = gil_path
 
 
 #--------------------IMPORT IMAGES -------------#
-I0 = Float64.()
-Ix = Float64.()
-Iy = Float64.()
-Id = Float64.()
-Ia = Float64.()
-Ir = Float64.()
-Il = Float64.()
+
+I0 = Float64.(Gray.(load(IM_PATH*"WIN_20230315_09_25_49_Pro_I0.jpg")))
+Ix = Float64.(Gray.(load(IM_PATH*"WIN_20230315_09_11_07_Pro_Horizontal.jpg")))
+Iy = Float64.(Gray.(load(IM_PATH*"WIN_20230315_09_11_56_Pro_Vertical.jpg")))
+Id = Float64.(Gray.(load(IM_PATH*"WIN_20230315_09_11_37_Pro_Diagonal.jpg")))
+Ia = Float64.(Gray.(load(IM_PATH*"WIN_20230315_09_12_12_Pro_Antidiagonal.jpg")))
+Ir = Float64.(Gray.(load(IM_PATH*"WIN_20230315_09_15_41_Pro_Derecha.jpg")))
+Il = Float64.(Gray.(load(IM_PATH*"WIN_20230315_09_16_04_Pro_Izquierda.jpg")))
 #---------------STOKES PARAMETERS----------------#
 
 S0 = Iy + Ix
@@ -31,14 +33,14 @@ S1 = Ix - Iy
 S2 = Ir - Il
 S3 = Id - Ia
 
-S0 = 1
+"S0 = 1
 S1 = 0
 S3 = 0
-S2 = √(S0^2-S1^2-S3^2)
+S2 = √(S0^2-S1^2-S3^2)"
 
 #Number of polarization elpises
 
-N = 2^4
+N = 20
 heatmap(w, h, I0, colormap = :grays)
 
 for ii in range(1,Int(height/N))
@@ -69,10 +71,11 @@ for ii in range(1,Int(height/N))
         plot!(xs, ys, lc = :blue, lw = 2, label = false)
     end
 end
-plot!(xs, ys, lc = :blue, lw = 2, label = false)
+
+plot!(0, 0, lc = :blue, lw = 2, label = false)
 
 xlabel!("x")
 ylabel!("y")
 
-
+savefig(IM_PATH"Polarizacion_Exp.jpg")
 
