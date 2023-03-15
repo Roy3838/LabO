@@ -17,7 +17,7 @@ ys = ymax*(2/Ntot)*(-Ntot/2:Ntot/2-1)
 #Meshgrid
 Ys = -ones(length(xs)).*xs*ones(length(xs))'
 Xs = -Ys'
-z = 1;
+z = 10;
 
 # Vector de propagacion
 k = 2*pi/lambda
@@ -35,7 +35,7 @@ Et = E1 + E2
 
 #Visualizamos el campo y su polarización
 heatmap(norm.(Et).^2,clim = (0,2), label = false, c = :grays)
-savefig("")
+
 N = 8
 for ii in range(1,Int(Ntot/N))
     yr = N*ii-(N-1):N*ii
