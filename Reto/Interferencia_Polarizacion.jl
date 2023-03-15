@@ -45,7 +45,6 @@ hc = 1:heightc
 #heatmap(wc, hc, I0c, c = :grays, )
 elp = palette([:red, :blue], 201);
 heatmap(norm.(Etc).^2, c = :gray, clim = (0,2))
-prom
 
 prom = Etc
 Ix = norm.([[1 0]].*prom).^2
@@ -133,7 +132,7 @@ for ii in range(1,Int(heightc/N))
         plot!(xs, ys, lc = elp[clr], lw = 2, label = false)
     end
 end
-plot!(xs, ys, lc = :blue, lw = 2, label = false)
+plot!(0, 0, lc = :blue, lw = 2, label = false)
 
 #Agregamos el polarizador lineal
 function Jpol(θ)
