@@ -90,25 +90,24 @@ ref2_n = ref2_n[crp:end-crp, crp:end-crp]
 ref3_n = ref3_n[crp:end-crp, crp:end-crp]
 ref4_n = ref4_n[crp:end-crp, crp:end-crp]
 
+#Obtención de fase
 Φi = (1/2)*atan.(-im2_n+im4_n,im1_n-im3_n)
 
 Φs = (1/2)*atan.(-ref2_n+ref4_n,ref1_n-ref3_n)
 
+#Desenvolvimiento de fase
 Φui = unwrap(Φi,dims = 1:2,range = pi)
 Φus = unwrap(Φs,dims = 1:2,range = pi)
 Φut = (Φus.-minimum(Φus))-(Φui.-minimum(Φui));
-heatmap(Φut)
+
+#Reescalamiento y ligero suavizado
 θ = atan(10.5/35.8)
 Φu_n =  imfilter(Φu, Kernel.gaussian(3))
 Φu_n = Φu_n.*(maximum(Φut)/maximum(Φu_n))
 h = ((1:length(Φu_n[:,1])).-1)./mm
 w = ((1:length(Φu_n[1,:])).-1)./mm
 
-length(h)
-length(w)
-
 z = Φu_n.*(a/(2*pi*tan(θ)))
-z[z.<0] .= 0
 
 heatmap(w, h, z, xlims = (5, 35), ylims = (10, 40), aspect_ratio = :equal)
 
