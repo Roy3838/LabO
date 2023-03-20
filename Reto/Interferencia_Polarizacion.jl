@@ -1,5 +1,6 @@
 using Plots
-
+using Statistics
+using LinearAlgebra
 # Campo de interes
 lambda = 633e-9
 ω0 = 5e-3
@@ -37,15 +38,15 @@ yc = 1:120
 xc = 1:160
 Etc = Et[yc,xc]
 #Visualizamos el campo y su polarización
-N = 8
+N = 2
 heightc = length(Etc[:,1])
 widthc = length(Etc[1,:])
 wc = 1:widthc
 hc = 1:heightc
 #heatmap(wc, hc, I0c, c = :grays, )
-elp = palette([:red, :blue], 201);
+elp = palette([:red, :blue], 2)
 heatmap(norm.(Etc).^2, c = :gray, clim = (0,2))
-
+plot(0,0, aspect_ratio = :equal)
 prom = Etc
 Ix = norm.([[1 0]].*prom).^2
 Iy = norm.([[0 1]].*prom).^2
@@ -62,10 +63,10 @@ for ii in range(1,Int(heightc/N))
 
         S0_p = Ix[yr, xr] + Iy[yr, xr]
         S1_p = Ix[yr, xr] - Iy[yr, xr]
-        S2_p = Ir[yr, xr] - Il[yr, xr]
+        S2_p = Il[yr, xr] - Ir[yr, xr]
         S3_p = Id[yr, xr] - Ia[yr, xr]
 
-        clr = Int(round(round(S2_p/maxS2, digits = 2)*100+101))
+        clr = Int((sign(S2_p)/2)+1.5)
         χ = (1/2)*atan.(S3_p, S1_p)
         b = sqrt.((1 - atan.((S1_p.^2+S3_p.^2),S2_p.^2)./(pi/2))/2)
         a = sqrt(1 - b.^2)
@@ -80,10 +81,12 @@ for ii in range(1,Int(heightc/N))
         # Scale into square size (N*N) and positionate
         xs = (N/2).*x .+ 2*xr.-(N/2)
         ys = (N/2).*y.+ 2*yr.-(N/2)
-        plot!(xs, ys, lc = elp[clr], lw = 2, label = false)
+        plot!(xs, ys, lc = elp[clr], lw = 2, label = false, aspect_ratio = :equal)
     end
 end
-plot!(xs, ys, lc = :blue, lw = 2, label = false)
+plot!(xs, ys, lc = :red, lw = 2, label = false, aspect_ratio = :equal)
+xlabel!("x")
+ylabel!("y")
 #Agregamos retardador de cuarto de onda
 
 function retλ4(θ)
@@ -96,7 +99,7 @@ Etr4 = [Interf].*Etc
 heatmap((norm.(Etr4).^2), clim = (0,2), c = :grays)
 
 N = 8
-
+plot(0,0)
 prom = Etr4
 Ix = norm.([[1 0]].*prom).^2
 Iy = norm.([[0 1]].*prom).^2
@@ -114,7 +117,6 @@ for ii in range(1,Int(heightc/N))
         S1_p = Ix[yr, xr] - Iy[yr, xr]
         S2_p = Ir[yr, xr] - Il[yr, xr]
         S3_p = Id[yr, xr] - Ia[yr, xr]
-        clr = 101
         χ = (1/2)*atan.(S3_p, S1_p)
         b = sqrt.((1 - atan.((S1_p.^2+S3_p.^2),S2_p.^2)./(pi/2))/2)
         a = sqrt(1 - b.^2)
@@ -129,11 +131,12 @@ for ii in range(1,Int(heightc/N))
         # Scale into square size (N*N) and positionate
         xs = (N/2).*x .+ 2*xr.-(N/2)
         ys = (N/2).*y.+ 2*yr.-(N/2)
-        plot!(xs, ys, lc = elp[clr], lw = 2, label = false)
+        plot!(xs, ys, lc = :blue, lw = 2, label = false)
     end
 end
 plot!(0, 0, lc = :blue, lw = 2, label = false)
-
+xlabel!("x")
+ylabel!("y")
 #Agregamos el polarizador lineal
 function Jpol(θ)
     J = [cos(θ)^2 sin(θ)*cos(θ);

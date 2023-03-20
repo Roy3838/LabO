@@ -3,7 +3,8 @@ using LaTeXStrings
 using Images
 using DSP
 using ImageFiltering
-
+using Statistics
+using LinearAlgebra
 plotly()
 # --------------PARAMETERS------------#
 
@@ -26,8 +27,9 @@ y2_im = y2_ref
 
 #--------------- PIXEL TO MM.---------------#
 
-mm = 36
-a = 83
+mm = 41
+676/mm
+a = 130
 a = a/mm
 # -----------IMPORT IMAGES-----------#
 ref1 = Float64.(Gray.(load(IM_PATH*"DSC_0378.JPG")))
@@ -61,7 +63,7 @@ im2 = imresize(im2, (height, width))
 im3 = imresize(im3, (height, width))
 im4 = imresize(im4, (height, width))
 
-sze = 8
+sze = 3
 
 include("noise_supp.jl")
 
@@ -88,32 +90,32 @@ ref2_n = ref2_n[crp:end-crp, crp:end-crp]
 ref3_n = ref3_n[crp:end-crp, crp:end-crp]
 ref4_n = ref4_n[crp:end-crp, crp:end-crp]
 
-Φi = atan.(-im2_n+im4_n,im1_n-im3_n)
+Φi = (1/2)*atan.(-im2_n+im4_n,im1_n-im3_n)
 
-Φs = atan.(-ref2_n+ref4_n,ref1_n-ref3_n)
+Φs = (1/2)*atan.(-ref2_n+ref4_n,ref1_n-ref3_n)
 
-Φu = unwrap(Φs-Φi,dims = 1:2,range = 2pi)
-heatmap(Φu)
-
-θ = atan(11.5/31.8)
-Φu_n =  imfilter(Φu, Kernel.gaussian(8))
-Φu_n = Φu_n.*(maximum(Φu)/maximum(Φu_n))
-heatmap(w, h, Φu_n, xlims = (10, 35), ylims = (15,43))
+Φui = unwrap(Φi,dims = 1:2,range = pi)
+Φus = unwrap(Φs,dims = 1:2,range = pi)
+Φut = (Φus.-minimum(Φus))-(Φui.-minimum(Φui));
+heatmap(Φut)
+θ = atan(10.5/35.8)
+Φu_n =  imfilter(Φu, Kernel.gaussian(3))
+Φu_n = Φu_n.*(maximum(Φut)/maximum(Φu_n))
 h = ((1:length(Φu_n[:,1])).-1)./mm
 w = ((1:length(Φu_n[1,:])).-1)./mm
 
 length(h)
 length(w)
-include("meshgrid.jl")
 
 z = Φu_n.*(a/(2*pi*tan(θ)))
+z[z.<0] .= 0
 
-u = surface(w, h, z,  xlims = (10, 35), ylims = (15,43),camera = (45,45), aspect_ratio = 1)
-plot3d!([10, 35],[0,0],[0,0], lc = :black, legend = false)
-plot3d!([0, 0],[15,43],[0,0], lc = :black, legend = false)
-plot3d!([0, 0],[0,0],[0,27], lc = :black, legend = false, zlabel = "z (mm)")
+heatmap(w, h, z, xlims = (5, 35), ylims = (10, 40), aspect_ratio = :equal)
+
+u = surface(w, h, z,  xlims = (5, 35), ylims = (10,40),camera = (45,45), aspect_ratio = 1)
+plot3d!([5, 35],[0,0],[0,0], lc = :black, legend = false)
+plot3d!([0, 0],[10,40],[0,0], lc = :black, legend = false)
+plot3d!([0, 0],[0,0],[0,30], lc = :black, legend = false, zlabel = "z (mm)")
 xlabel!("x (mm)")
 ylabel!("y (mm)")
-
-save(u, "timon_isotropica.png")
 
